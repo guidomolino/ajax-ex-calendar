@@ -8,24 +8,46 @@
 // Diamo la possibilità di cambiare mese, gestendo il caso in cui l'API non possa ritornare festività.
 
 
-
 // CREAZIONE CALENDARIO
 function createCalendar() {
-  var monthsList = moment.months();
-  console.log(months);
-  for (var i = 0; i < monthsList.length; i++) {
-    monthsList[i]
+  // dati correnti
+  var currentMonth = 1;
+  var currentYear = 2018;
+  var date = currentYear + "-" + currentMonth;
+  console.log("mese selezionato:", date);
+  var numDays = moment(date, "YYYY-M").daysInMonth();
+  console.log("numero giorni", numDays);
+  // stampa giorni
+  for (var i = 0; i < numDays; i++) {
+    var dayNum = i+1;
+
+    $("#day-template").attr("data-info", dayNum);
+    $("#day-num").text(dayNum);
+
+    var template = $("#template").html();
+    var target = $(".day-list");
+    target.css("display","flex").append(template);
+
   }
+
+  getMonthEvent(currentMonth,currentYear);
+  var next = $("#next");
+  next.click(function () {
+    currentMonth++
+    console.log(currentMonth);
+  });
 }
 
 
 // ASSEGNAZIONE EVENTI
-function getMonth() {
+function getMonthEvent(currentMonth,currentYear) {
 
+  var month = currentMonth - 1;
+  var year = currentYear;
   var eventsList = [];
 
   $.ajax({
-    url: "https://flynn.boolean.careers/exercises/api/holidays?month=0&year=2018",
+    url: "https://flynn.boolean.careers/exercises/api/holidays?month="+month+"&year="+year,
     method: "GET",
     success: function(data, state){
       var success = data["success"];
@@ -39,9 +61,11 @@ function getMonth() {
         console.log(eventList);
 
         for (var i = 0; i < eventList.length; i++) {
-          var date = moment(eventList[i].date, "YYYY-MM-DD");
-          var eventDay = date.format('D');
+          var eventDate = moment(eventList[i].date, "YYYY-MM-DD");
+          var eventDay = eventDate.format('D');
           var eventName = eventList[i].name;
+
+          $("[data-info="+ eventDay +"]").children("p").text(eventName);
 
           console.log(eventName);
           console.log(eventDay);
@@ -49,10 +73,6 @@ function getMonth() {
         }
 
       }
-
-
-
-
 
 
 
@@ -66,11 +86,8 @@ function getMonth() {
 }
 
 
-
-
 function init() {
   createCalendar();
-  getMonth();
 }
 
 $(document).ready(init);
