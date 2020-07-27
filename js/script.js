@@ -7,12 +7,13 @@
 // Milestone 2
 // Diamo la possibilità di cambiare mese, gestendo il caso in cui l'API non possa ritornare festività.
 
+// VARIABILI GLOBALI
+var currentMonth = 1;
+var currentYear = 2018;
 
 // CREAZIONE CALENDARIO
-function createCalendar() {
+function createCalendar(currentMonth, currentYear) {
   // dati correnti
-  var currentMonth = 1;
-  var currentYear = 2018;
   var date = currentYear + "-" + currentMonth;
   console.log("mese selezionato:", date);
   var numDays = moment(date, "YYYY-M").daysInMonth();
@@ -31,11 +32,7 @@ function createCalendar() {
   }
 
   getMonthEvent(currentMonth,currentYear);
-  var next = $("#next");
-  next.click(function () {
-    currentMonth++
-    console.log(currentMonth);
-  });
+
 }
 
 
@@ -85,9 +82,41 @@ function getMonthEvent(currentMonth,currentYear) {
   })
 }
 
+function rightClickListener(currentMonth) {
+  var next = $("#next");
+  next.click(function () {
+    if (currentMonth!=12) {
+      currentMonth++
+    }else {
+      currentMonth=1;
+    }
+    console.log(currentMonth);
+    $(".day-list").empty();
+    createCalendar(currentMonth,currentYear);
+  });
+}
+
+function leftClickListener(currentMonth) {
+  var prev = $("#prev");
+  prev.click(function () {
+    if (currentMonth!=1) {
+      currentMonth--
+    }else{
+      currentMonth=12;
+    }
+    console.log(currentMonth);
+    
+
+    $(".day-list").empty();
+    createCalendar(currentMonth,currentYear);
+  });
+}
+
 
 function init() {
-  createCalendar();
+  createCalendar(currentMonth, currentYear);
+  rightClickListener(currentMonth);
+  leftClickListener(currentMonth);
 }
 
 $(document).ready(init);
